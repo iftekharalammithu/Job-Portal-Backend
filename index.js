@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import connectDB from "./Utils/Mongodb.js";
 
 dotenv.config();
 
@@ -27,5 +28,6 @@ app.get("/", (req, res) => {
 
 // Start the server
 app.listen(port, () => {
+  connectDB();
   console.log(`Server is running on port ${port}`);
 });
