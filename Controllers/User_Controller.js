@@ -1,6 +1,8 @@
 import User from "../Models/User_model_Schema.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 export const register = async (req, res) => {
   try {
@@ -83,7 +85,7 @@ export const login = async (req, res) => {
       maxAge: 30 * 24 * 60 * 60 * 1000, // Cookie expires in 30 days
       httpOnly: true, // Prevent client-side access to the cookie
       sameSite: "None", // Prevent CSRF attacks
-      secure: true, // Cookie expires in 1 hour (same as token)
+      secure: false, // Cookie expires in 1 hour (same as token)
     });
 
     res.status(200).json({

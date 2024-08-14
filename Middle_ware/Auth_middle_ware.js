@@ -4,6 +4,7 @@ const auth = (req, res, next) => {
   try {
     // Get the token from the request cookies
     const token = req.cookies.token;
+    // console.log(req.cookies);
 
     if (!token) {
       return res

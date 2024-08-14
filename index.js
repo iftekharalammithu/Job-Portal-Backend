@@ -3,9 +3,11 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import connectDB from "./Utils/Mongodb.js";
+import user_router from "./Routes/User_route.js";
 
 dotenv.config();
 
+const port = process.env.PORT || 3000;
 const app = express();
 
 app.use(express.json());
@@ -19,8 +21,7 @@ app.use(
     credential: true,
   })
 );
-
-const port = process.env.PORT || 3000;
+app.use("/api/v1/user", user_router);
 
 app.get("/", (req, res) => {
   res.send("Hello from the server!");
