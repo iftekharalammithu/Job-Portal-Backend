@@ -102,3 +102,77 @@ export const login = async (req, res) => {
     res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+// ... (existing register and login functions)
+
+export const logout = async (req, res) => {
+  try {
+    // Clear the cookie that holds the JWT token
+    res.clearCookie("token", {
+      httpOnly: true,
+      sameSite: "None",
+      secure: true,
+    });
+
+    res.status(200).json({ message: "Logout successful" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.userId; // Assuming you have middleware to extract userId from the token
+    const {
+      fullname,
+      email,
+      phonenumber,
+      bio,
+      skills,
+      resume,
+      resumeOriginalName,
+      profilePhoto,
+    } = req.body;
+
+    // the skills code is in 1:13:20 time YT Videos
+
+    // Create an update object with only the fields to be updated
+    const updateFields = {};
+    if (fullname) updateFields.fullname = fullname;
+    if (email) updateFields.email = email;
+    if (phonenumber) updateFields.phonenumber = phonenumber;
+    if (bio) updateFields["profile.bio"] = bio; // Update nested field
+    if (skills) updateFields["profile.skills"] = skills; // Update nested field
+    if (resume) updateFields["profile.resume"] = resume; // Update nested field
+    if (resumeOriginalName)
+      updateFields["profile.resumeOriginalName"] = resumeOriginalName; // Update nested field
+    if (profilePhoto) updateFields["profile.profilePhoto"] = profilePhoto; // Update nested field
+
+    // Find the user by ID and update the profile
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateFields }, // Use $set to update only specified fields
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user_data: {
+        _id: updatedUser._id,
+        fullname: updatedUser.fullname,
+        email: updatedUser.email,
+        phone: updatedUser.phonenumber,
+        role: updatedUser.role,
+        profile: updatedUser.profile,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
