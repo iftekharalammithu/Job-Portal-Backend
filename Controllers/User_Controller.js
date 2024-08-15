@@ -126,6 +126,7 @@ export const logout = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const userId = req.user.userId; // Assuming you have middleware to extract userId from the token
+    // console.log(userId);
     const {
       fullname,
       email,
