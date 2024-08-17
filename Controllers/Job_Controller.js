@@ -1,4 +1,4 @@
-import Job from "../Models/Job_schema.js";
+import Job_schema from "../Models/Job_schema.js";
 
 // For Admin Post
 export const postJob = async (req, res) => {
@@ -10,7 +10,7 @@ export const postJob = async (req, res) => {
       salary,
       location,
       jobType,
-      experience, // Assuming "experience" is the same as "position"
+      experience,
       position,
       companyId,
     } = req.body;
@@ -33,7 +33,7 @@ export const postJob = async (req, res) => {
     }
 
     // Create new job object
-    const newJob = new Job({
+    const newJob = new Job_schema({
       title,
       description,
       requirements: Array.isArray(requirements) ? requirements : [requirements], // Ensure requirements is an array
@@ -74,7 +74,7 @@ export const getAllJobs = async (req, res) => {
     }
 
     // Find jobs based on the query
-    const jobs = await Job.find(query);
+    const jobs = await Job_schema.find(query);
     //   .populate("company", "name logo description") // Populate company details
     //   .sort({ createdAt: -1 }); // Sort by creation date (newest first)
 
@@ -98,7 +98,7 @@ export const getJobById = async (req, res) => {
     const jobId = req.params.jobId; // Get jobId from request parameters
 
     // Find the job by its ID and populate company details
-    const job = await Job.findById(jobId);
+    const job = await Job_schema.findById(jobId);
     // .populate(
     //   "company",
     //   "name logo description"
@@ -123,7 +123,7 @@ export const getJobByAdminId = async (req, res) => {
     const adminId = req.user.userId; // Get admin's userId from the token
 
     // Find jobs created by the admin
-    const jobs = await Job.find({ createdBy: adminId })
+    const jobs = await Job_schema.find({ createdBy: adminId })
       .populate("company", "name logo description") // Populate company details
       .sort({ createdAt: -1 }); // Sort by creation date (newest first)
 
