@@ -98,11 +98,10 @@ export const getJobById = async (req, res) => {
     const jobId = req.params.jobId; // Get jobId from request parameters
 
     // Find the job by its ID and populate company details
-    const job = await Job_schema.findById(jobId);
-    // .populate(
-    //   "company",
-    //   "name logo description"
-    // );
+    const job = await Job_schema.findById(jobId).populate(
+      "company",
+      "name logo description"
+    );
 
     // Check if a job with the given ID was found
     if (!job) {
