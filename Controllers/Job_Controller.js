@@ -115,3 +115,26 @@ export const getJobById = async (req, res) => {
     res.status(500).json({ message: "Something went wrong" });
   }
 };
+// ... other functions (postJob, getAllJobs, getJobById)
+
+// For Admin
+export const getJobByAdminId = async (req, res) => {
+  try {
+    const adminId = req.user.userId; // Get admin's userId from the token
+
+    // Find jobs created by the admin
+    const jobs = await Job.find({ createdBy: adminId })
+      .populate("company", "name logo description") // Populate company details
+      .sort({ createdAt: -1 }); // Sort by creation date (newest first)
+
+    // Check if any jobs were found
+    if (jobs.length === 0) {
+      return res.status(404).json({ message: "No jobs found for this admin" });
+    }
+
+    res.status(200).json({ jobs, success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
