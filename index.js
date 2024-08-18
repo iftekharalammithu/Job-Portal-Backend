@@ -6,6 +6,7 @@ import connectDB from "./Utils/Mongodb.js";
 import user_router from "./Routes/User_route.js";
 import company_route from "./Routes/Company_route.js";
 import job_route from "./Routes/Job_Route.js";
+import Application_router from "./Routes/Application_Route.js";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use(
 app.use("/api/v1/user", user_router);
 app.use("/api/v1/company", company_route);
 app.use("/api/v1/job", job_route);
+app.use("/api/v1/application", Application_router);
 
 app.get("/", (req, res) => {
   res.send("Hello from the server!");
