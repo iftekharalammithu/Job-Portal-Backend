@@ -80,15 +80,15 @@ export const getApplicants = async (req, res) => {
     const jobId = req.params.jobId;
 
     // Find the job by its ID and populate applications with applicant details
-    const job = await Job_schema.findById(jobId)
-      .populate({
-        path: "applications", // Populate the applications array
-        populate: {
-          path: "applicant", // Populate the applicant field within each application
-          select: "fullname email phonenumber profile", // Select specific fields from the applicant
-        },
-      })
-      .sort({ "job.createdAt": -1 });
+    const job = await Job_schema.findById(jobId).populate({
+      path: "applications", // Populate the applications array
+      populate: {
+        path: "applicant", // Populate the applicant field within each application
+        select: "fullname email phonenumber profile", // Select specific fields from the applicant
+      },
+      options: { sort: { createdAt: -1 } },
+    });
+    // .sort({ "job.createdAt": 1 });
 
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
