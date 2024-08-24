@@ -6,11 +6,12 @@ import {
   updateProfile,
 } from "../Controllers/User_Controller.js";
 import auth from "../Middle_ware/Auth_middle_ware.js";
+import { singleUpload } from "../Middle_ware/Multer.js";
 
 const user_router = express.Router();
 
 // Register Route
-user_router.post("/register", register);
+user_router.post("/register", singleUpload, register);
 
 // Login Route
 user_router.post("/login", login);

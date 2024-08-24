@@ -6,7 +6,7 @@ dotenv.config();
 
 export const register = async (req, res) => {
   try {
-    const { fullname, email, phonenumber, password, role } = req.body;
+    const { fullname, email, phonenumber, password, role, file } = req.body;
     // console.log(fullname, email, phonenumber, password, role);
 
     // Check if any required field is missing
