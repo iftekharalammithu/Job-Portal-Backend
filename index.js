@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://your-frontend-domain.com", // Replace with your frontend domain
+    origin: "http://localhost:5173", // Replace with your frontend domain
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credential: true,
