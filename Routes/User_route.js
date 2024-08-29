@@ -19,6 +19,6 @@ user_router.post("/login", login);
 // Logout Route
 user_router.get("/logout", logout);
 
-user_router.post("/update/user", auth, updateProfile);
+user_router.post("/update/user", auth, singleUpload, updateProfile);
 
 export default user_router;
