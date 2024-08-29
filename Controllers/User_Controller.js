@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import getDataUri from "../Utils/datauri.js";
-import cloudinary from "UtilsCloudinary";
+import cloudinary from "../Utils/Cloudinary.js";
 dotenv.config();
 
 export const register = async (req, res) => {
@@ -130,24 +130,12 @@ export const updateProfile = async (req, res) => {
   try {
     const userId = req.user.userId; // Assuming you have middleware to extract userId from the token
     // console.log(userId);
-    const {
-      fullname,
-      email,
-      phonenumber,
-      bio,
-      skills,
-      resume,
+    const { fullname, email, phonenumber, bio, skills } = req.body;
 
-      profilePhoto,
-    } = req.body;
-
+    // console.log(req.files);
     const resumeOriginalName = req.files.resume[0].originalname;
     const getDataUri1 = getDataUri(req.files.resume[0]);
     const cloudResponse = await cloudinary.uploader.upload(getDataUri1.content);
-
-    console.log(getDataUri1.content);
-    // console.log(req.files);
-    console.log(resumeOriginalName);
 
     // console.log(
     //   userId,
@@ -170,10 +158,12 @@ export const updateProfile = async (req, res) => {
     if (phonenumber) updateFields.phonenumber = phonenumber;
     if (bio) updateFields["profile.bio"] = bio; // Update nested field
     if (skills) updateFields["profile.skills"] = skills; // Update nested field
-    if (resume) updateFields["profile.resume"] = resume; // Update nested field
-    if (resumeOriginalName)
-      updateFields["profile.resumeOriginalName"] = resumeOriginalName; // Update nested field
-    if (profilePhoto) updateFields["profile.profilePhoto"] = profilePhoto; // Update nested field
+    if (cloudResponse.secure_url)
+      updateFields["profile.resume"] = cloudResponse.secure_url; // Update nested field
+    if (req.files.resume[0].originalname)
+      updateFields["profile.resumeOriginalName"] =
+        req.files.resume[0].originalname; // Update nested field
+    // if (profilePhoto) updateFields["profile.profilePhoto"] = profilePhoto; // Update nested field
 
     // Find the user by ID and update the profile
     const updatedUser = await User.findByIdAndUpdate(
