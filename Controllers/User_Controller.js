@@ -2,6 +2,8 @@ import User from "../Models/User_model_Schema.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import getDataUri from "../Utils/datauri.js";
+import cloudinary from "UtilsCloudinary";
 dotenv.config();
 
 export const register = async (req, res) => {
@@ -135,9 +137,29 @@ export const updateProfile = async (req, res) => {
       bio,
       skills,
       resume,
-      resumeOriginalName,
+
       profilePhoto,
     } = req.body;
+
+    const resumeOriginalName = req.files.resume[0].originalname;
+    const getDataUri1 = getDataUri(req.files.resume[0]);
+    const cloudResponse = await cloudinary.uploader.upload(getDataUri1.content);
+
+    console.log(getDataUri1.content);
+    // console.log(req.files);
+    console.log(resumeOriginalName);
+
+    // console.log(
+    //   userId,
+    //   fullname,
+    //   email,
+    //   phonenumber,
+    //   bio,
+    //   skills,
+    //   resume,
+    //   resumeOriginalName,
+    //   profilePhoto
+    // );
 
     // the skills code is in 1:13:20 time YT Videos
 

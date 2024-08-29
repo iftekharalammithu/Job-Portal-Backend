@@ -6,7 +6,7 @@ import {
   updateProfile,
 } from "../Controllers/User_Controller.js";
 import auth from "../Middle_ware/Auth_middle_ware.js";
-import { singleUpload } from "../Middle_ware/Multer.js";
+import { multipleUpload, singleUpload } from "../Middle_ware/Multer.js";
 
 const user_router = express.Router();
 
@@ -19,6 +19,6 @@ user_router.post("/login", login);
 // Logout Route
 user_router.get("/logout", logout);
 
-user_router.post("/update/user", auth, singleUpload, updateProfile);
+user_router.post("/update/user", auth, multipleUpload, updateProfile);
 
 export default user_router;
