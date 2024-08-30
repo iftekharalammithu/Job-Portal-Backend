@@ -4,15 +4,24 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import getDataUri from "../Utils/datauri.js";
 import cloudinary from "../Utils/Cloudinary.js";
+import generateToken from "../Utils/generateToken.js";
 dotenv.config();
 
 export const register = async (req, res) => {
   try {
-    const { fullname, email, phonenumber, password, role, file } = req.body;
+    const { fullname, email, phonenumber, password, role } = req.body;
     // console.log(fullname, email, phonenumber, password, role);
+    // console.log(req.file);
 
     // Check if any required field is missing
-    if (!fullname || !email || !phonenumber || !password || !role) {
+    if (
+      !fullname ||
+      !email ||
+      !phonenumber ||
+      !password ||
+      !role ||
+      !req.file
+    ) {
       return res
         .status(400)
         .json({ message: "All fields are required", success: false });
@@ -23,6 +32,11 @@ export const register = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
+
+    const profilegetDataUri = getDataUri(req.file);
+    const cloudResponse = await cloudinary.uploader.upload(
+      profilegetDataUri.content
+    );
 
     // Hash the password
     const salt = await bcrypt.genSalt(10);
@@ -35,12 +49,17 @@ export const register = async (req, res) => {
       phonenumber,
       password: hashedPassword,
       role, // Make sure to include the role in the request body
+      profile: {
+        profilePhoto: cloudResponse.secure_url,
+      },
     });
 
     // Save user to database
     await newUser.save();
 
-    res.status(201).json({ message: "User registered successfully" });
+    res
+      .status(201)
+      .json({ message: "User registered successfully", success: true });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Something went wrong" });
@@ -83,12 +102,33 @@ export const login = async (req, res) => {
       }
     );
 
-    // Set token in a cookie (optional, but common for web apps)
+    // return res
+    //   .status(200)
+    //   .cookie("token", token, {
+    //     maxAge: 1 * 24 * 60 * 60 * 1000,
+    //     httpsOnly: true,
+    //     sameSite: "None",
+    //   })
+    //   .json({
+    //     message: "Login successful",
+    //     user_data: {
+    //       _id: user._id,
+    //       fullname: user.fullname,
+    //       email: user.email,
+    //       phone: user.phonenumber,
+    //       role: user.role,
+    //       profile: user.profile,
+    //     },
+    //   });
+
+    // generateToken(user._id, res);
+
+    // // Set token in a cookie (optional, but common for web apps)
     res.cookie("token", token, {
       maxAge: 30 * 24 * 60 * 60 * 1000, // Cookie expires in 30 days
-      httpOnly: true, // Prevent client-side access to the cookie
+      httpsOnly: true, // Prevent client-side access to the cookie
       sameSite: "None", // Prevent CSRF attacks
-      secure: false, // Cookie expires in 1 hour (same as token)
+      secure: true, // Cookie expires in 1 hour (same as token)
     });
 
     res.status(200).json({
@@ -99,8 +139,9 @@ export const login = async (req, res) => {
         email: user.email,
         phone: user.phonenumber,
         role: user.role,
+        profile: user.profile,
       },
-      token, // Include token in the response
+      //   // Include token in the response
     });
   } catch (error) {
     console.error(error);
@@ -131,11 +172,14 @@ export const updateProfile = async (req, res) => {
     const userId = req.user.userId; // Assuming you have middleware to extract userId from the token
     // console.log(userId);
     const { fullname, email, phonenumber, bio, skills } = req.body;
+    console.log(fullname, email, phonenumber, bio, skills);
 
-    // console.log(req.files);
-    const resumeOriginalName = req.files.resume[0].originalname;
-    const getDataUri1 = getDataUri(req.files.resume[0]);
-    const cloudResponse = await cloudinary.uploader.upload(getDataUri1.content);
+    console.log(req.files);
+    const resumeOriginalName = req.files.file[0].originalname;
+    const resumegetDataUri = getDataUri(req.files.file[0]);
+    const cloudResponse = await cloudinary.uploader.upload(
+      resumegetDataUri.content
+    );
 
     // console.log(
     //   userId,
@@ -160,9 +204,8 @@ export const updateProfile = async (req, res) => {
     if (skills) updateFields["profile.skills"] = skills; // Update nested field
     if (cloudResponse.secure_url)
       updateFields["profile.resume"] = cloudResponse.secure_url; // Update nested field
-    if (req.files.resume[0].originalname)
-      updateFields["profile.resumeOriginalName"] =
-        req.files.resume[0].originalname; // Update nested field
+    if (resumeOriginalName)
+      updateFields["profile.resumeOriginalName"] = resumeOriginalName; // Update nested field
     // if (profilePhoto) updateFields["profile.profilePhoto"] = profilePhoto; // Update nested field
 
     // Find the user by ID and update the profile

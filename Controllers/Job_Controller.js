@@ -84,7 +84,7 @@ export const getAllJobs = async (req, res) => {
         .json({ message: "Jobs Not Found", success: false });
     }
 
-    res.status(200).json(jobs);
+    res.status(200).json({ jobs, success: true });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Something went wrong" });

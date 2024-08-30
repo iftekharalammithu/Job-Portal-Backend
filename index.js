@@ -21,7 +21,7 @@ app.use(
     origin: "http://localhost:5173", // Replace with your frontend domain
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credential: true,
+    credentials: true,
   })
 );
 app.use("/api/v1/user", user_router);
